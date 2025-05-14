@@ -10,7 +10,8 @@ Route::get('/user', function (Request $request) {
 
 Route::middleware('api')->group(function () {
     Route::post('/user-registration', [UserController::class, 'UserRegistration']);
-    // Route::post('/user-login', [\App\Http\Controllers\UserController::class, 'UserLogin']);
+    Route::post('/user-login', [UserController::class, 'UserLogin']);
+    Route::post('/send-otp', [UserController::class,'SendOTPMail']);
     // Route::post('/user-logout', [\App\Http\Controllers\UserController::class, 'UserLogout']);
     // Route::post('/user-verify-otp', [\App\Http\Controllers\UserController::class, 'UserVerifyOtp']);
 });
