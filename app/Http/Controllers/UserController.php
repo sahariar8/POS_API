@@ -78,7 +78,8 @@ class UserController extends Controller
 
             $token = JWTToken::generateToken($user);
 
-            return response()->json(['status' => 'success','message' => 'User logged in successfully', 'token' => $token], 200);
+            return response()->json(['status' => 'success','message' => 'User logged in successfully'], 200)
+                ->cookie('token', $token, time() + 60 * 24 * 30);
         } catch (\Exception $e) {
             return response()->json(['status' => 'failed','error' => $e->getMessage()], 400);
         }

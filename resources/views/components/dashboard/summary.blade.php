@@ -164,7 +164,7 @@
 
 
 
-<script>
+{{-- <script>
     getList();
     async function getList() {
         showLoader();
@@ -181,4 +181,4 @@
 
         hideLoader();
     }
-</script>
+</script> --}}
