@@ -16,7 +16,7 @@ class JWTToken
         $payload = [
             'iss' => config('app.name'), // Issuer
             'iat' => time(), // Issued at
-            'exp' => time() + (60 * 60),
+            'exp' => time() + 60 * 60,
             'userEmail' =>  $user->email// Expiration time (1 hour)
         ];
 
@@ -34,7 +34,21 @@ class JWTToken
         return $userEmail;
        }
         catch(\Exception $e){
-          return response()->json(['status' => 'failed','error' => $e->getMessage()], 400);
+          return response()->json(['status' => 'UnAuthorized','error' => $e->getMessage()], 400);
         }
     }
+
+    public static function createVerifyToken($user)
+    {
+        $key = env('JWT_SECRET_KEY');
+        $payload = [
+            'iss' => config('app.name'), // Issuer
+            'iat' => time(), // Issued at
+            'exp' => time() + 60 * 5, // Expiration time (m minutes)
+            'userEmail' =>  $user->email
+        ];
+
+        return JWT::encode($payload, $key,  'HS256');
+    }
+        
 }

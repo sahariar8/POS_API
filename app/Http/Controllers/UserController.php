@@ -78,4 +78,54 @@ class UserController extends Controller
             return response()->json(['status' => 'failed','error' => $e->getMessage()], 400);
         }
     }
+
+    public function VerifyOTPMail(Request $request)
+    {
+        try {
+            $request->validate([
+                'email' => 'required|string|email|max:255',
+                'otp' => 'required|integer|digits:4',
+            ]);
+
+            $user = User::where('email', $request->email)->first();
+
+            if (!$user) {
+                return response()->json(['status' => 'failed','message' => 'User not found'], 404);
+            }
+
+            if ($user->otp != $request->otp) {
+                return response()->json(['status' => 'failed','message' => 'Invalid OTP'], 401);
+            }
+            if($user->updated_at->diffInMinutes() > 5){
+                return response()->json(['status' => 'failed','message' => 'OTP expired'], 401);
+            }
+
+
+            // OTP verified successfully
+            User::where('email', $request->email)->update(['otp' => '0']); // Clear OTP after verification
+            $token = JWTToken::createVerifyToken($user);
+
+            return response()->json(['status' => 'success','message' => 'OTP verified successfully', 'token' => $token], 200);
+            
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'failed','error' => $e->getMessage()], 400);
+        }
+    }
+
+    public function ResetPassword(Request $request)
+    {
+        try {
+            $request->validate([
+                // 'email' => 'required|string|email|max:255',
+                'password' => 'required|string|min:8',
+            ]);
+            // dd($request->all());
+
+            $email = $request->header('email');
+            User::where('email', $email)->update(['password' => bcrypt($request->password)]);
+            return response()->json(['status' => 'success','message' => 'Password reset successfully'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'failed','error' => $e->getMessage()], 400);
+        }
+    }
 }
